@@ -28,35 +28,77 @@ type BankAccount = {
 
 let accounts: BankAccount[] = [];
 
-function createAccount(accountNo, firstname, lastname, initialDeposit, isActive = true) {
-
+function createAccount(accountNo: number, firstname: string, lastname: string, initialDeposit: number, isActive = true) : BankAccount {
+  const newAccount: BankAccount = {
+    accountNo,
+    firstname,
+    lastname,
+    balance: initialDeposit,
+    isActive,
+    transactions: []
+  };
+  accounts.push(newAccount);
+  return newAccount;
 }
 
-function processTransaction(accountNo, amount, transactionType) {
-
+function processTransaction(accountNo: number, amount: number, transactionType: TransactionType): string {
+  const account = accounts.find(acc => acc.accountNo === accountNo);
+  if (!account) {
+    return `Account number ${accountNo} not found`;
+  }
+  if (transactionType === TransactionType.Deposit) {
+    account.balance += amount;
+    account.transactions.push({ accountNo, amount, type: TransactionType.Deposit });
+    return `${amount} deposited into account number ${accountNo}`;
+  } else if (transactionType === TransactionType.Withdraw) {
+    if (account.balance < amount) {
+      return `Insufficient funds`;
+    }
+    account.balance -= amount;
+    account.transactions.push({ accountNo, amount, type: TransactionType.Withdraw });
+    return `${amount} withdrawn from account number ${accountNo}`;
+  }
+  return `Invalid transaction type`;
 }
 
-function getBalance(accountNo) {
-
+function getBalance(accountNo: number): number | string {
+  const account = accounts.find(acc => acc.accountNo === accountNo);
+  if (!account) {
+    return `Account number ${accountNo} not found`;
+  }
+  return account.balance;
 }
 
-function getTransactionHistory(accountNo) {
-
+function getTransactionHistory(accountNo: number): Transaction[] | string {
+  const account = accounts.find(acc => acc.accountNo === accountNo);
+  if (!account) {
+    return `Account number ${accountNo} not found`;
+  }
+  return account.transactions;
 }
 
-function checkActiveStatus(accountNo) {
-
+function checkActiveStatus(accountNo: number): boolean | string {
+  const account = accounts.find(acc => acc.accountNo === accountNo);
+  if (!account) {
+    return `Account number ${accountNo} not found`;
+  }
+  return account.isActive;
 }
 
-function closeAccount(accountNo) {
-
+function closeAccount(accountNo: number): string {
+  const accountIndex = accounts.findIndex(acc => acc.accountNo === accountNo);
+  if (accountIndex === -1) {
+    return `Account number ${accountNo} not found`;
+  }
+  accounts.splice(accountIndex, 1);
+  return `Account number ${accountNo} closed`;
 }
 
 // Test cases (students should add more)
 console.log(createAccount(1, "John", "Smith", 100)) // { accountNo: 1, firstname: "John", lastname: "Smith", balance: 100, isActive: true, transactions: [] }
-console.log(processTransaction(1, 50, TransactionType.Deposit)) // "50 deposited into account number 1"
-console.log(processTransaction(1, 20, TransactionType.Withdraw)) // "20 withdrawn from account number 1"
-console.log(processTransaction(1, 500, TransactionType.Withdraw)) // "Insufficient funds for withdrawal"
+console.log(processTransaction(1, 50, TransactionType.Deposit)) // "50 deposited into account 1"
+console.log(processTransaction(1, 20, TransactionType.Withdraw)) // "20 withdrawn from account 1"
+console.log(processTransaction(1, 500, TransactionType.Withdraw)) // "Insufficient funds"
 console.log(getBalance(1)) // 130
 console.log(getTransactionHistory(1)) // [{ accountNo: 1, amount: 50, type: TransactionType.Deposit }, { accountNo: 1, amount: 20, type: TransactionType.Withdraw }]
 console.log(checkActiveStatus(1)) // true

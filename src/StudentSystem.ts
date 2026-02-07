@@ -9,25 +9,51 @@
 type StudentStatus = "active" | "graduated" | "dropped";
 
 type Student = {
-
+    studentId: number;
+    name: string;
+    age: number;
+    subjects: string[];
+    status: StudentStatus;
 }
 
 let students: Student[] = [];
 
-function addStudent(studentId, name, age, subjects, status) {
-
+function addStudent(studentId: number, name: string, age: number, subjects: string[], status: StudentStatus): Student {
+    const newStudent: Student = {
+        studentId,
+        name,
+        age,
+        subjects,
+        status
+    };
+    students.push(newStudent);
+    return newStudent;
 }
 
-function updateStatus(studentId, status) {
-
+function updateStatus(studentId: number, status: StudentStatus): string {
+  const student = students.find(st => st.studentId === studentId);
+  if (!student) {
+    return `Student with ID ${studentId} not found`;
+  }
+  student.status = status;
+  return `${student.name} has been ${status}`;
 }
 
-function addSubject(studentId, subject) {
-
+function addSubject(studentId: number, subject: string): string {
+  const student = students.find(st => st.studentId === studentId);
+  if (!student) {
+    return `Student with ID ${studentId} not found`;
+  }
+  student.subjects.push(subject);
+  return `${subject} added to ${student.name}'s subjects`;
 }
 
-function getStudent(studentId) {
-
+function getStudent(studentId: number): Student | string {
+  const student = students.find(st => st.studentId === studentId);
+  if (!student) {
+    return `Student with ID ${studentId} not found`;
+  }
+  return student;
 }
 
 // Test cases (Create more if needed)
